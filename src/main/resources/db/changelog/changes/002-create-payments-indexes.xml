@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/mongodb"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+        http://www.liquibase.org/xml/ns/mongodb
+        http://www.liquibase.org/xml/ns/mongodb/liquibase-mongodb-latest.xsd">
+
+    <!-- All payments of an order (+ latest first) -->
+    <changeSet id="002-idx-order-id-timestamp" author="alexeev">
+        <ext:createIndex collectionName="payments">
+            <ext:keys>{ order_id: 1, timestamp: -1 }</ext:keys>
+            <ext:options>{ name: "idx_payments_order_id_timestamp" }</ext:options>
+        </ext:createIndex>
+        <rollback>
+            <ext:dropIndex collectionName="payments">
+                <ext:keys>{ order_id: 1, timestamp: -1 }</ext:keys>
+            </ext:dropIndex>
+        </rollback>
+    </changeSet>
+
+    <!-- Payment history of a user -->
+    <changeSet id="002-idx-user-id-timestamp" author="alexeev">
+        <ext:createIndex collectionName="payments">
+            <ext:keys>{ user_id: 1, timestamp: -1 }</ext:keys>
+            <ext:options>{ name: "idx_payments_user_id_timestamp" }</ext:options>
+        </ext:createIndex>
+        <rollback>
+            <ext:dropIndex collectionName="payments">
+                <ext:keys>{ user_id: 1, timestamp: -1 }</ext:keys>
+            </ext:dropIndex>
+        </rollback>
+    </changeSet>
+
+    <!-- Filtering by status (e.g. pending/failed payments, newest first) -->
+    <changeSet id="002-idx-status-timestamp" author="alexeev">
+        <ext:createIndex collectionName="payments">
+            <ext:keys>{ status: 1, timestamp: -1 }</ext:keys>
+            <ext:options>{ name: "idx_payments_status_timestamp" }</ext:options>
+        </ext:createIndex>
+        <rollback>
+            <ext:dropIndex collectionName="payments">
+                <ext:keys>{ status: 1, timestamp: -1 }</ext:keys>
+            </ext:dropIndex>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>
