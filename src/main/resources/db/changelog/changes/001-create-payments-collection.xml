@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/mongodb"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+        http://www.liquibase.org/xml/ns/mongodb
+        http://www.liquibase.org/xml/ns/mongodb/liquibase-mongodb-latest.xsd">
+
+    <changeSet id="001-create-payments-collection" author="alexeev">
+        <ext:createCollection collectionName="payments">
+            <ext:options>
+                {
+                  validator: {
+                    $jsonSchema: {
+                      bsonType: "object",
+                      required: ["_id", "order_id", "user_id", "status", "timestamp", "payment_amount"],
+                      properties: {
+                        _id:            { bsonType: "string",  description: "payment id (UUID)" },
+                        order_id:       { bsonType: "string" },
+                        user_id:        { bsonType: "string" },
+                        status:         { enum: ["PENDING", "COMPLETED", "FAILED", "REFUNDED", "CANCELLED"] },
+                        timestamp:      { bsonType: "date" },
+                        payment_amount: { bsonType: "decimal", minimum: 0 }
+                      }
+                    }
+                  },
+                  validationLevel: "strict",
+                  validationAction: "error"
+                }
+            </ext:options>
+        </ext:createCollection>
+        <rollback>
+            <ext:dropCollection collectionName="payments"/>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>
