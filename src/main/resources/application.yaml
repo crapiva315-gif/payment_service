@@ -1,13 +1,12 @@
 spring:
   application:
     name: payment_service
-  data:
-    mongodb:
-      uri: mongodb://localhost:27017/payments_db
+  mongodb:
+    uri: mongodb://localhost:27017/payments_db
   docker:
     compose:
-      enabled: false   # MongoDB запускаем вручную: docker compose up -d
+      enabled: false
 
 app:
   liquibase:
-    mongo-url: ${spring.data.mongodb.uri}
+    mongo-url: ${spring.mongodb.uri}

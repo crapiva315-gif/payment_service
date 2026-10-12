@@ -1,5 +1,11 @@
 package dev.alexeev.payment_service.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -9,6 +15,12 @@ import java.math.BigDecimal;
 import java.time.Instant;
 
 @Document(collection = "payments")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@ToString
 public class Payment {
 
     @Id
@@ -27,19 +39,4 @@ public class Payment {
 
     @Field(name = "payment_amount", targetType = FieldType.DECIMAL128)
     private BigDecimal paymentAmount;
-
-    public enum PaymentStatus { PENDING, COMPLETED, FAILED, REFUNDED, CANCELLED }
-
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
-    public String getOrderId() { return orderId; }
-    public void setOrderId(String orderId) { this.orderId = orderId; }
-    public String getUserId() { return userId; }
-    public void setUserId(String userId) { this.userId = userId; }
-    public PaymentStatus getStatus() { return status; }
-    public void setStatus(PaymentStatus status) { this.status = status; }
-    public Instant getTimestamp() { return timestamp; }
-    public void setTimestamp(Instant timestamp) { this.timestamp = timestamp; }
-    public BigDecimal getPaymentAmount() { return paymentAmount; }
-    public void setPaymentAmount(BigDecimal paymentAmount) { this.paymentAmount = paymentAmount; }
 }
