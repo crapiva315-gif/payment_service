@@ -7,4 +7,5 @@
 
     <include file="db/changelog/changes/001-create-payments-collection.xml"/>
     <include file="db/changelog/changes/002-create-payments-indexes.xml"/>
+    <include file="db/changelog/changes/003-update-payment-statuses.xml"/>
 </databaseChangeLog>

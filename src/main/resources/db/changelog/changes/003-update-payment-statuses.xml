@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/mongodb"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+        http://www.liquibase.org/xml/ns/mongodb
+        http://www.liquibase.org/xml/ns/mongodb/liquibase-mongodb-latest.xsd">
+
+    <changeSet id="003-1-allow-success-status" author="alexeev">
+        <ext:runCommand>
+            <ext:command>
+                {
+                collMod: "payments",
+                validator: {
+                $jsonSchema: {
+                bsonType: "object",
+                required: ["_id", "order_id", "user_id", "status", "timestamp", "payment_amount"],
+                properties: {
+                _id:            { bsonType: "string" },
+                order_id:       { bsonType: "string" },
+                user_id:        { bsonType: "string" },
+                status:         { enum: ["PENDING", "COMPLETED", "SUCCESS", "FAILED", "REFUNDED", "CANCELLED"] },
+                timestamp:      { bsonType: "date" },
+                payment_amount: { bsonType: "decimal", minimum: 0 }
+                }
+                }
+                },
+                validationLevel: "strict",
+                validationAction: "error"
+                }
+            </ext:command>
+        </ext:runCommand>
+        <rollback>
+            <ext:runCommand>
+                <ext:command>
+                    {
+                    collMod: "payments",
+                    validator: {
+                    $jsonSchema: {
+                    bsonType: "object",
+                    required: ["_id", "order_id", "user_id", "status", "timestamp", "payment_amount"],
+                    properties: {
+                    _id:            { bsonType: "string" },
+                    order_id:       { bsonType: "string" },
+                    user_id:        { bsonType: "string" },
+                    status:         { enum: ["PENDING", "COMPLETED", "FAILED", "REFUNDED", "CANCELLED"] },
+                    timestamp:      { bsonType: "date" },
+                    payment_amount: { bsonType: "decimal", minimum: 0 }
+                    }
+                    }
+                    },
+                    validationLevel: "strict",
+                    validationAction: "error"
+                    }
+                </ext:command>
+            </ext:runCommand>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="003-2-rename-completed-to-success" author="alexeev">
+        <ext:runCommand>
+            <ext:command>
+                {
+                update: "payments",
+                updates: [ { q: { status: "COMPLETED" }, u: { $set: { status: "SUCCESS" } }, multi: true } ]
+                }
+            </ext:command>
+        </ext:runCommand>
+        <rollback>
+            <ext:runCommand>
+                <ext:command>
+                    {
+                    update: "payments",
+                    updates: [ { q: { status: "SUCCESS" }, u: { $set: { status: "COMPLETED" } }, multi: true } ]
+                    }
+                </ext:command>
+            </ext:runCommand>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="003-3-final-status-enum" author="alexeev">
+        <ext:runCommand>
+            <ext:command>
+                {
+                collMod: "payments",
+                validator: {
+                $jsonSchema: {
+                bsonType: "object",
+                required: ["_id", "order_id", "user_id", "status", "timestamp", "payment_amount"],
+                properties: {
+                _id:            { bsonType: "string" },
+                order_id:       { bsonType: "string" },
+                user_id:        { bsonType: "string" },
+                status:         { enum: ["PENDING", "SUCCESS", "FAILED", "REFUNDED", "CANCELLED"] },
+                timestamp:      { bsonType: "date" },
+                payment_amount: { bsonType: "decimal", minimum: 0 }
+                }
+                }
+                },
+                validationLevel: "strict",
+                validationAction: "error"
+                }
+            </ext:command>
+        </ext:runCommand>
+        <rollback>
+            <ext:runCommand>
+                <ext:command>
+                    {
+                    collMod: "payments",
+                    validator: {
+                    $jsonSchema: {
+                    bsonType: "object",
+                    required: ["_id", "order_id", "user_id", "status", "timestamp", "payment_amount"],
+                    properties: {
+                    _id:            { bsonType: "string" },
+                    order_id:       { bsonType: "string" },
+                    user_id:        { bsonType: "string" },
+                    status:         { enum: ["PENDING", "COMPLETED", "SUCCESS", "FAILED", "REFUNDED", "CANCELLED"] },
+                    timestamp:      { bsonType: "date" },
+                    payment_amount: { bsonType: "decimal", minimum: 0 }
+                    }
+                    }
+                    },
+                    validationLevel: "strict",
+                    validationAction: "error"
+                    }
+                </ext:command>
+            </ext:runCommand>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>
