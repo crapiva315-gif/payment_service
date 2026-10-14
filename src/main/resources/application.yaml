@@ -2,11 +2,10 @@ spring:
   application:
     name: payment_service
   mongodb:
-    uri: mongodb://localhost:27017/payments_db
+    uri: mongodb://localhost:27017/payments_db?directConnection=true
   docker:
     compose:
       enabled: false
-
 app:
   liquibase:
     mongo-url: ${spring.mongodb.uri}

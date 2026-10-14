@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 
+/** Query parameters of GET /api/payments. At least one filter is required. */
 public record PaymentSearchRequest(
 
         @Size(min = 1, max = 64, message = "userId must be 1-64 characters")
@@ -22,13 +23,13 @@ public record PaymentSearchRequest(
         @Max(value = 100, message = "size must be <= 100")
         Integer size
 ) {
-    public PaymentSearchRequest {
-        if (page == null) page = 0;
-        if (size == null) size = 20;
-    }
+  public PaymentSearchRequest {
+    if (page == null) page = 0;
+    if (size == null) size = 20;
+  }
 
-    @AssertTrue(message = "At least one of userId, orderId, status must be provided")
-    public boolean isAnyFilterPresent() {
-        return userId != null || orderId != null || status != null;
-    }
+  @AssertTrue(message = "At least one of userId, orderId, status must be provided")
+  public boolean isAnyFilterPresent() {
+    return userId != null || orderId != null || status != null;
+  }
 }
