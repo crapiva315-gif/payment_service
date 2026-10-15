@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/mongodb"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+        http://www.liquibase.org/xml/ns/mongodb
+        http://www.liquibase.org/xml/ns/mongodb/liquibase-mongodb-latest.xsd">
+
+    <!-- Outbox collection read by Debezium (MongoEventRouter). Field names are fixed by the router defaults. -->
+    <changeSet id="004-create-outbox-collection" author="alexeev">
+        <ext:createCollection collectionName="outbox">
+            <ext:options>
+                {
+                validator: {
+                $jsonSchema: {
+                bsonType: "object",
+                required: ["_id", "aggregatetype", "aggregateid", "type", "payload", "created_at"],
+                properties: {
+                _id:           { bsonType: "string" },
+                aggregatetype: { bsonType: "string" },
+                aggregateid:   { bsonType: "string" },
+                type:          { bsonType: "string" },
+                payload:       { bsonType: "string" },
+                created_at:    { bsonType: "date" }
+                }
+                }
+                },
+                validationLevel: "strict",
+                validationAction: "error"
+                }
+            </ext:options>
+        </ext:createCollection>
+        <rollback>
+            <ext:dropCollection collectionName="outbox"/>
+        </rollback>
+    </changeSet>
+
+    <!-- Rows are only needed until Debezium has read them. The connector ignores the delete events
+         that the TTL monitor produces. Keep the TTL longer than any Kafka Connect outage you want to survive. -->
+    <changeSet id="004-ttl-outbox-created-at" author="alexeev">
+        <ext:createIndex collectionName="outbox">
+            <ext:keys>{ created_at: 1 }</ext:keys>
+            <ext:options>{ name: "idx_outbox_created_at_ttl", expireAfterSeconds: 86400 }</ext:options>
+        </ext:createIndex>
+        <rollback>
+            <ext:dropIndex collectionName="outbox">
+                <ext:keys>{ created_at: 1 }</ext:keys>
+            </ext:dropIndex>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

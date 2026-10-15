@@ -6,6 +6,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
+/** Query parameters of the totals endpoints; both dates are inclusive (UTC days). */
 public record DateRangeRequest(
 
         @NotNull(message = "from is required (yyyy-MM-dd)")
@@ -16,8 +17,8 @@ public record DateRangeRequest(
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
         LocalDate to
 ) {
-    @AssertTrue(message = "'from' must not be after 'to'")
-    public boolean isRangeValid() {
-        return from == null || to == null || !from.isAfter(to);
-    }
+        @AssertTrue(message = "'from' must not be after 'to'")
+        public boolean isRangeValid() {
+                return from == null || to == null || !from.isAfter(to);
+        }
 }
